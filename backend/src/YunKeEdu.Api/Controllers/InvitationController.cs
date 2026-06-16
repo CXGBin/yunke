@@ -34,6 +34,7 @@ public class InvitationController : ControllerBase
         return ApiResponse<bool>.Ok(true);
     }
 
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
     [HttpGet("validate/{inviteCode}")]
     public async Task<ApiResponse<ValidateInvitationDto>> Validate(string inviteCode)
         => ApiResponse<ValidateInvitationDto>.Ok(await _service.ValidateAsync(inviteCode));

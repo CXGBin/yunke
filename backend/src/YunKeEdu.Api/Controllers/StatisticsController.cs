@@ -16,6 +16,7 @@ public class StatisticsController : ControllerBase
     public async Task<ApiResponse<OrgDashboardDto>> OrgDashboard()
         => ApiResponse<OrgDashboardDto>.Ok(await _service.GetOrgDashboardAsync(GetUser()));
 
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
     [HttpGet("overview")]
     public async Task<ApiResponse<OrgOverviewDto>> Overview()
         => ApiResponse<OrgOverviewDto>.Ok(await _service.GetPlatformOverviewAsync());

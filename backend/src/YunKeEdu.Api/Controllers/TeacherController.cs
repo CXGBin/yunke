@@ -38,6 +38,7 @@ public class TeacherController : ControllerBase
         return ApiResponse<bool>.Ok(true);
     }
 
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
     [HttpGet("public-list")]
     public async Task<ApiResponse<List<TeacherDto>>> PublicList()
         => ApiResponse<List<TeacherDto>>.Ok(await _service.GetPublicListAsync(GetUser().TenantId));

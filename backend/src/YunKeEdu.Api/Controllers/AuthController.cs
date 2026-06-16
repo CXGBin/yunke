@@ -14,10 +14,12 @@ public class AuthController : ControllerBase
     public AuthController(AuthService service) => _service = service;
 
     [HttpPost("login")]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public async Task<ApiResponse<LoginResponse>> Login([FromBody] LoginRequest req)
         => ApiResponse<LoginResponse>.Ok(await _service.LoginAsync(req, HttpContext));
 
     [HttpPost("wx-login")]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public async Task<ApiResponse<LoginResponse>> WxLogin([FromBody] WxLoginRequest req)
         => ApiResponse<LoginResponse>.Ok(await _service.WxLoginAsync(req));
 
