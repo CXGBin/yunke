@@ -16,7 +16,7 @@ export async function getCoursePackageDetail(id: number) {
 }
 
 /** 创建课程套餐 (后端: POST /api/course-package) */
-export async function createCoursePackage(data: any) {
+export async function createCoursePackage(data: Partial<API.CoursePackage>) {
   return request('/api/course-package', {
     method: 'POST',
     data,
@@ -24,7 +24,7 @@ export async function createCoursePackage(data: any) {
 }
 
 /** 更新课程套餐 (后端: PUT /api/course-package/{id}) */
-export async function updateCoursePackage(id: number, data: any) {
+export async function updateCoursePackage(id: number, data: Partial<API.CoursePackage>) {
   return request(`/api/course-package/${id}`, {
     method: 'PUT',
     data,

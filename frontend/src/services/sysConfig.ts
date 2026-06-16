@@ -8,7 +8,7 @@ export async function getOrgConfig() {
 }
 
 /** 更新机构配置 (后端: PUT /api/config/org) */
-export async function updateOrgConfig(data: any) {
+export async function updateOrgConfig(data: Partial<API.OrgConfig>) {
   return request('/api/config/org', {
     method: 'PUT',
     data,

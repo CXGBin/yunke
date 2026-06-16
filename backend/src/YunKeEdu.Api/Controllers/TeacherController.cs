@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -43,5 +44,5 @@ public class TeacherController : ControllerBase
     public async Task<ApiResponse<List<TeacherDto>>> PublicList()
         => ApiResponse<List<TeacherDto>>.Ok(await _service.GetPublicListAsync(GetUser().TenantId));
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

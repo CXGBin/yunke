@@ -1000,3 +1000,97 @@ GO
 -- ============================================================
 PRINT '初始化完成：36 张表已创建';
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'SysMenu')
+BEGIN
+    CREATE TABLE SysMenu (
+        Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        ParentId BIGINT NOT NULL DEFAULT 0,
+        MenuType INT NOT NULL DEFAULT 1,       -- 1=目录 2=菜单 3=按钮
+        Name NVARCHAR(50) NOT NULL,
+        Path NVARCHAR(200) NULL,
+        Component NVARCHAR(200) NULL,
+        Icon NVARCHAR(50) NULL,
+        SortOrder INT NOT NULL DEFAULT 0,
+        Permission NVARCHAR(100) NULL,         -- 权限码 如 sys:user:add
+        BtnType NVARCHAR(20) NULL,             -- view/edit/delete/add/import/export
+        Visible INT NOT NULL DEFAULT 1,       -- 0=隐藏 1=显示
+        Status INT NOT NULL DEFAULT 1,         -- 0=禁用 1=启用
+        Description NVARCHAR(200) NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE()
+    );
+    CREATE INDEX IX_SysMenu_ParentId ON SysMenu(ParentId);
+END
+GO
+
+-- SysRole: 系统角色表
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'SysRole')
+BEGIN
+    CREATE TABLE SysRole (
+        Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        TenantId BIGINT NOT NULL DEFAULT 0,
+        RoleName NVARCHAR(50) NOT NULL,
+        RoleCode NVARCHAR(100) NULL,
+        Description NVARCHAR(200) NULL,
+        SortOrder INT NOT NULL DEFAULT 0,
+        Status INT NOT NULL DEFAULT 1,
+        DataScope INT NOT NULL DEFAULT 1,      -- 0=全部 1=本机构 2=本校区 3=仅本人
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE()
+    );
+END
+GO
+
+-- SysRoleMenu: 角色-菜单关联表
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'SysRoleMenu')
+BEGIN
+    CREATE TABLE SysRoleMenu (
+        Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        RoleId BIGINT NOT NULL,
+        MenuId BIGINT NOT NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        CONSTRAINT FK_SysRoleMenu_Role FOREIGN KEY (RoleId) REFERENCES SysRole(Id),
+        CONSTRAINT FK_SysRoleMenu_Menu FOREIGN KEY (MenuId) REFERENCES SysMenu(Id)
+    );
+    CREATE INDEX IX_SysRoleMenu_RoleId ON SysRoleMenu(RoleId);
+END
+GO
+
+-- SysUserRole: 用户-角色关联表
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE name = 'SysUserRole')
+BEGIN
+    CREATE TABLE SysUserRole (
+        Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+        UserId BIGINT NOT NULL,
+        RoleId BIGINT NOT NULL,
+        TenantId BIGINT NOT NULL DEFAULT 0,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        CONSTRAINT FK_SysUserRole_User FOREIGN KEY (UserId) REFERENCES SysUser(Id),
+        CONSTRAINT FK_SysUserRole_Role FOREIGN KEY (RoleId) REFERENCES SysRole(Id)
+    );
+    CREATE INDEX IX_SysUserRole_UserId ON SysUserRole(UserId);
+END
+GO
+
+-- ===== 种子数据：菜单树 =====
+-- 清空旧数据
+DELETE FROM SysRoleMenu WHERE RoleId IN (SELECT Id FROM SysRole WHERE TenantId = 0);
+DELETE FROM SysRole WHERE TenantId = 0;
+
+-- ========== 补充复合索引（Round1审查 P1-31/P1-32） ==========
+
+-- P1-31: NotificationLog 按收件人+已读状态+时间查询（高频）
+CREATE NONCLUSTERED INDEX IX_NotificationLog_Recipient_IsRead_Created
+ON NotificationLog(RecipientId, IsRead, CreatedAt);
+
+-- P1-32: CourseEvaluation 按课程+排课查评价
+CREATE NONCLUSTERED INDEX IX_CourseEvaluation_CourseId_ScheduleId
+ON CourseEvaluation(CourseId, ScheduleId);
+
+-- P2-17: StatisticsDailySnapshot 按租户+日期查统计
+CREATE NONCLUSTERED INDEX IX_StatisticsDailySnapshot_TenantId_StatDate
+ON StatisticsDailySnapshot(TenantId, StatDate);
+
+-- P2-18: StatisticsCourseSnapshot 按租户+月份查统计
+CREATE NONCLUSTERED INDEX IX_StatisticsCourseSnapshot_TenantId_StatMonth
+ON StatisticsCourseSnapshot(TenantId, StatMonth);

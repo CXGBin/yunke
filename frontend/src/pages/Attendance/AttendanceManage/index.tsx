@@ -20,7 +20,7 @@ const AttendanceManage: React.FC = () => {
   return (
     <PageContainer>
       <Card bordered={false}>
-        <ProTable<any>
+        <ProTable<API.Attendance>
           headerTitle="签到记录"
           rowKey="id"
           search={{ labelWidth: 'auto' }}

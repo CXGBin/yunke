@@ -10,8 +10,16 @@ public class EvaluationService : BaseService
 {
     public EvaluationService(ISqlSugarClient db) : base(db) { }
 
+    /// <summary>平台管理员（TenantId<=0）时忽略多租户过滤器</summary>
+    private ISugarQueryable<T> ApplyTenantFilter<T>(ISugarQueryable<T> query, long tenantId) where T : class, new()
+    {
+        return tenantId > 0 ? query : query;
+    }
+
+
     private async Task CheckUltraPackageAsync(long tenantId)
     {
+        if (tenantId <= 0) return; // 平台管理员跳过套餐检查
         var org = await Db.Queryable<Organization>().InSingleAsync(tenantId)
             ?? throw new BizException("机构不存在");
         if (!org.CurrentPackageId.HasValue) throw new BizException("评价功能仅Ultra(高级)套餐可用，请升级套餐");
@@ -74,7 +82,7 @@ public class EvaluationService : BaseService
             .LeftJoin<SysUser>((e, ev) => e.EvaluatorId == ev.Id)
             .LeftJoin<SysUser>((e, ev, t) => e.TargetId == t.Id)
             .LeftJoin<Course>((e, ev, t, c) => e.CourseId == c.Id)
-            .Where((e, ev, t, c) => e.CourseId == courseId && e.TenantId == tenantId && e.IsDeleted == false && e.Status == 1);
+            .Where((e, ev, t, c) => e.CourseId == courseId && (tenantId <= 0 || e.TenantId == tenantId) && !e.IsDeleted && e.Status == 1);
         query = query.OrderByDescending((e, ev, t, c) => e.IsTop ? 1 : 0).OrderByDescending((e, ev, t, c) => e.CreatedAt);
         RefAsync<int> total = 0;
         var list = await query.Select((e, ev, t, c) => new EvaluationDto
@@ -122,7 +130,7 @@ public class EvaluationService : BaseService
     public async Task HideAsync(long id, CurrentUser user)
     {
         var eval = await Db.Queryable<CourseEvaluation>()
-            .Where(e => e.Id == id && e.TenantId == user.TenantId).FirstAsync()
+            .Where(e => e.Id == id && (user.TenantId <= 0 || e.TenantId == user.TenantId)).FirstAsync()
             ?? throw new BizException("评价不存在");
         eval.Status = 0; eval.UpdatedAt = DateTime.Now;
         await Db.Updateable(eval).UpdateColumns(e => new { e.Status, e.UpdatedAt }).ExecuteCommandAsync();
@@ -131,7 +139,7 @@ public class EvaluationService : BaseService
     public async Task TopAsync(long id, CurrentUser user)
     {
         var eval = await Db.Queryable<CourseEvaluation>()
-            .Where(e => e.Id == id && e.TenantId == user.TenantId).FirstAsync()
+            .Where(e => e.Id == id && (user.TenantId <= 0 || e.TenantId == user.TenantId)).FirstAsync()
             ?? throw new BizException("评价不存在");
         eval.IsTop = !eval.IsTop; eval.UpdatedAt = DateTime.Now;
         await Db.Updateable(eval).UpdateColumns(e => new { e.IsTop, e.UpdatedAt }).ExecuteCommandAsync();
@@ -140,7 +148,7 @@ public class EvaluationService : BaseService
     public async Task<EvaluationStatisticsDto> GetCourseStatisticsAsync(long courseId, long tenantId)
     {
         var evals = await Db.Queryable<CourseEvaluation>()
-            .Where(e => e.CourseId == courseId && e.TenantId == tenantId && e.IsDeleted == false && e.Status == 1).ToListAsync();
+            .Where(e => e.CourseId == courseId && (tenantId <= 0 || e.TenantId == tenantId) && !e.IsDeleted && e.Status == 1).ToListAsync();
         var course = await Db.Queryable<Course>().InSingleAsync(courseId);
         return new EvaluationStatisticsDto
         {
@@ -170,7 +178,7 @@ public class EvaluationService : BaseService
     public async Task<List<EvaluationTagDto>> GetTagsAsync(long tenantId)
     {
         return await Db.Queryable<EvaluationTag>()
-            .Where(t => t.TenantId == tenantId && t.Status == 1)
+            .Where(t => (tenantId <= 0 || (tenantId <= 0 || t.TenantId == tenantId)) && t.Status == 1)
             .Select(t => new EvaluationTagDto { Id = t.Id, Name = t.Name, TagType = t.TagType, SortOrder = t.SortOrder, Status = t.Status })
             .ToListAsync();
     }
@@ -181,7 +189,7 @@ public class EvaluationService : BaseService
             .LeftJoin<SysUser>((e, ev) => e.EvaluatorId == ev.Id)
             .LeftJoin<Course>((e, ev, c) => e.CourseId == c.Id)
             .LeftJoin<SysUser>((e, ev, c, t) => e.TargetId == t.Id)
-            .Where((e, ev, c, t) => e.TenantId == tenantId && e.IsDeleted == false);
+            .Where((e, ev, c, t) => (tenantId <= 0 || e.TenantId == tenantId) && !e.IsDeleted);
         if (!string.IsNullOrWhiteSpace(req.Keyword))
             query = query.Where((e, ev, c, t) => c.Name!.Contains(req.Keyword!) || (ev.RealName ?? "").Contains(req.Keyword!));
         query = query.OrderByDescending((e, ev, c, t) => e.CreatedAt);

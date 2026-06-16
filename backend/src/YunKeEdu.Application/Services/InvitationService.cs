@@ -29,7 +29,9 @@ public class InvitationService : BaseService
 
     public async Task<PagedResult<InvitationDto>> GetPageAsync(PageRequest req, long tenantId)
     {
-        var query = Db.Queryable<InvitationRecord>().Where(i => i.TenantId == tenantId && !i.IsDeleted);
+        var query = (tenantId > 0
+            ? Db.Queryable<InvitationRecord>().Where(i => i.TenantId == tenantId)
+            : Db.Queryable<InvitationRecord>()).Where(i => !i.IsDeleted);
         if (!string.IsNullOrWhiteSpace(req.Keyword))
             query = query.Where(i => i.InvitedName!.Contains(req.Keyword!) || i.InvitedPhone!.Contains(req.Keyword!));
         query = query.OrderBy(i => i.Id, OrderByType.Desc);
@@ -94,6 +96,7 @@ public class InvitationService : BaseService
     public async Task<ValidateInvitationDto> ValidateAsync(string inviteCode)
     {
         var record = await Db.Queryable<InvitationRecord>()
+            
             .LeftJoin<Organization>((i, o) => i.OrgId == o.Id)
             .LeftJoin<Campus>((i, o, c) => i.CampusId == c.Id)
             .Where((i, o, c) => i.InviteCode == inviteCode && !i.IsDeleted)

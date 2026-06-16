@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 
 /** 创建排课 (后端: POST /api/schedule) */
-export async function createSchedule(data: any) {
+export async function createSchedule(data: Partial<API.Schedule>) {
   return request('/api/schedule', {
     method: 'POST',
     data,
@@ -9,7 +9,7 @@ export async function createSchedule(data: any) {
 }
 
 /** 创建重复排课 (后端: POST /api/schedule/recurrence) */
-export async function createRecurrenceSchedule(data: any) {
+export async function createRecurrenceSchedule(data: Partial<API.Schedule>) {
   return request('/api/schedule/recurrence', {
     method: 'POST',
     data,
@@ -17,7 +17,7 @@ export async function createRecurrenceSchedule(data: any) {
 }
 
 /** 更新排课 (后端: PUT /api/schedule/{id}) */
-export async function updateSchedule(id: number, data: any) {
+export async function updateSchedule(id: number, data: Partial<API.Schedule>) {
   return request(`/api/schedule/${id}`, {
     method: 'PUT',
     data,

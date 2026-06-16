@@ -134,8 +134,9 @@ public class SettlementService : BaseService
     public async Task<List<SettlementSummaryDto>> GetSummaryAsync(CurrentUser user, int? month = null)
     {
         var query = Db.Queryable<FeeSettlementRecord>()
+            
             .LeftJoin<SysUser>((r, t) => r.TeacherId == t.Id)
-            .Where((r, t) => r.TenantId == user.TenantId);
+            .Where((r, t) => user.TenantId <= 0 || r.TenantId == user.TenantId);
         if (month.HasValue)
         {
             var start = new DateTime(month.Value / 100, month.Value % 100, 1);
@@ -153,10 +154,11 @@ public class SettlementService : BaseService
 
     public async Task<List<SettlementExportDto>> GetExportAsync(CurrentUser user)
     {
-        return await Db.Queryable<FeeSettlementRecord>()
+        var records = await Db.Queryable<FeeSettlementRecord>()
+            
             .LeftJoin<Course>((r, c) => r.CourseId == c.Id)
             .LeftJoin<SysUser>((r, c, t) => r.TeacherId == t.Id)
-            .Where((r, c, t) => r.TenantId == user.TenantId)
+            .Where((r, c, t) => user.TenantId <= 0 || r.TenantId == user.TenantId)
             .GroupBy((r, c, t) => new { r.CourseId, CourseName = c.Name, r.TeacherId, TeacherName = t.RealName ?? "" })
             .Select((r, c, t) => new SettlementExportDto
             {
@@ -165,6 +167,7 @@ public class SettlementService : BaseService
                 Lessons = SqlFunc.AggregateCount(r.Id),
                 TotalAmount = SqlFunc.AggregateSum(r.Amount),
             }).ToListAsync();
+        return records ?? [];
     }
 
     private async Task<PagedResult<TDto>> GetPagedAsync<TDto>(ISugarQueryable<FeeSettlementRecord> query, int page, int pageSize)

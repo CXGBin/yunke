@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -46,7 +47,7 @@ public class EnrollmentController : ControllerBase
         return ApiResponse<bool>.Ok(true);
     }
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }
 
 [ApiController]
@@ -71,5 +72,5 @@ public class WaitListController : ControllerBase
     public async Task<ApiResponse<List<WaitListDto>>> MyList()
         => ApiResponse<List<WaitListDto>>.Ok(await _service.GetMyWaitlistAsync(GetUser()));
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

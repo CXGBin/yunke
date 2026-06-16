@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -38,5 +39,5 @@ public class LeaveController : ControllerBase
     public async Task<ApiResponse<PagedResult<LeaveRequestDto>>> Page([FromQuery] PageRequest req)
         => ApiResponse<PagedResult<LeaveRequestDto>>.Ok(await _service.GetPageAsync(req, GetUser()));
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

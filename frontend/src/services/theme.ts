@@ -11,7 +11,7 @@ export async function getThemeList() {
 }
 
 /** 更新机构主题 */
-export async function updateOrgTheme(data: any) {
+export async function updateOrgTheme(data: Partial<API.ThemeConfig>) {
   return request('/api/theme/update-org', { method: 'PUT', data });
 }
 

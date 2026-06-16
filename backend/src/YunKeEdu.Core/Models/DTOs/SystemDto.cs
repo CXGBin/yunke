@@ -395,3 +395,7 @@ public class CreateEvaluationTagRequest
     public int SortOrder { get; set; }
 }
 #endregion
+
+
+/// <summary>更新系统配置请求</summary>
+public class UpdateConfigDto { public string ConfigKey { get; set; } = ""; public string ConfigValue { get; set; } = ""; }

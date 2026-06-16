@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -96,5 +97,5 @@ public class CoursePackageController : ControllerBase
         });
     }
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

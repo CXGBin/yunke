@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -71,5 +72,5 @@ public class NotificationController : ControllerBase
     public async Task<ApiResponse<long>> Send([FromBody] SendNotificationRequest req)
         => ApiResponse<long>.Ok(await _service.SendAsync(req, GetUser()));
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

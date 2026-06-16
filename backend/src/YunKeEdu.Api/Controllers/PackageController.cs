@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using SqlSugar;
 using YunKeEdu.Core.Entities;
 using YunKeEdu.Core.Exceptions;
@@ -9,6 +10,7 @@ namespace YunKeEdu.Api.Controllers;
 
 [ApiController]
 [Route("api/packages")]
+[AllowAnonymous]
 public class PackageController : ControllerBase
 {
     private readonly ISqlSugarClient _db;

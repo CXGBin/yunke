@@ -3,6 +3,7 @@ using SqlSugar;
 using YunKeEdu.Core.Entities;
 using YunKeEdu.Core.Exceptions;
 using YunKeEdu.Core.Models;
+using YunKeEdu.Core.Models.DTOs;
 
 
 namespace YunKeEdu.Api.Controllers;
@@ -31,6 +32,15 @@ public class SystemController : ControllerBase
         if (exists == null) throw new BizException("配置项不存在");
         exists.ConfigValue = dto.ConfigValue; exists.UpdatedAt = DateTime.Now;
         await _db.Updateable(exists).ExecuteCommandAsync();
+        return ApiResponse<bool>.Ok(true);
+    }
+
+    [HttpDelete("config/{id}")]
+    public async Task<ApiResponse<bool>> DeleteConfig(long id)
+    {
+        var config = await _db.Queryable<Core.Entities.SysConfig>().InSingleAsync(id)
+            ?? throw new Core.Exceptions.BizException("配置不存在");
+        await _db.Deleteable<Core.Entities.SysConfig>().Where(c => c.Id == id).ExecuteCommandAsync();
         return ApiResponse<bool>.Ok(true);
     }
 
@@ -70,4 +80,3 @@ public class SystemController : ControllerBase
     }
 }
 
-public class UpdateConfigDto { public string ConfigKey { get; set; } = ""; public string ConfigValue { get; set; } = ""; }

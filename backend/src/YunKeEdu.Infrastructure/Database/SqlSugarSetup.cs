@@ -29,8 +29,31 @@ public static class SqlSugarSetup
             },
             db =>
             {
-                // 多租户全局过滤器：自动追加 WHERE TenantId = @CurrentTenantId AND IsDeleted = 0
-                db.QueryFilter.AddTableFilter<BaseEntity>(t => t.TenantId == TenantContext.CurrentTenantId && t.IsDeleted == false);
+                // 多租户全局过滤器：TenantId<=0(平台管理员)时跳过
+                db.QueryFilter.AddTableFilter<BaseEntity>(t => TenantContext.CurrentTenantId <= 0 || (t.TenantId == TenantContext.CurrentTenantId && t.IsDeleted == false));
+                db.QueryFilter.AddTableFilter<Attendance>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<CourseAttachment>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<CourseEnrollment>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<CourseFeeSettlement>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<CoursePackageItem>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<EvaluationReply>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<EvaluationTag>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<FeeSettlementRecord>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<LeaveRequest>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<NotificationConfig>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<NotificationLog>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<NotificationTemplate>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<OrgConfig>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<OrgSubscription>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<PackageUpgradeOrder>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<ScheduleChangeLog>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<ScheduleRecurrence>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<SignInQRCode>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<StatisticsCourseSnapshot>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<StatisticsDailySnapshot>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<TeacherWallet>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<UserOrgBinding>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
+                db.QueryFilter.AddTableFilter<WaitList>(t => TenantContext.CurrentTenantId <= 0 || t.TenantId == TenantContext.CurrentTenantId);
             });
 
             return sqlSugar;

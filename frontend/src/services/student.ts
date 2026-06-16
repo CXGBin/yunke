@@ -16,7 +16,7 @@ export async function getStudentDetail(id: number) {
 }
 
 /** 导入学生 (后端: POST /api/student/import) */
-export async function importStudent(data: any) {
+export async function importStudent(data: FormData) {
   return request('/api/student/import', {
     method: 'POST',
     data,

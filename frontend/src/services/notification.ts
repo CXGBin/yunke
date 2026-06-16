@@ -39,7 +39,7 @@ export async function getNotificationConfig() {
 }
 
 /** 更新通知配置 (后端: PUT /api/notification/config) */
-export async function updateNotificationConfig(data: any) {
+export async function updateNotificationConfig(data: Partial<API.NotificationConfig>) {
   return request('/api/notification/config', {
     method: 'PUT',
     data,

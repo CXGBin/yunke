@@ -51,4 +51,4 @@ export const getUserPage = getUserList;
 export async function updateUserStatus(id: number, status: number) {
   return request(`/api/users/${id}/status`, { method: 'PUT', data: { status } });
 }
-export async function getParents(params: any) { return request<API.PagedResult<any>>("/api/parent/page", { method: "GET", params }); }
+export async function getParents(params: API.PageParams) { return request<API.PagedResult<API.Parent>>("/api/parent/page", { method: "GET", params }); }

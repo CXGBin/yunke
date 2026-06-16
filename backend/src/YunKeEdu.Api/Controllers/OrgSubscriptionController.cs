@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -36,5 +37,5 @@ public class OrgSubscriptionController : ControllerBase
     public async Task<ApiResponse<UpgradeOrderDto>> UpgradeDetail(long id)
         => ApiResponse<UpgradeOrderDto>.Ok(await _service.GetUpgradeDetailAsync(id));
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

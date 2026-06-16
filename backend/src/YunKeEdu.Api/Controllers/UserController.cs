@@ -3,6 +3,7 @@ using SqlSugar;
 using YunKeEdu.Core.Entities;
 using YunKeEdu.Core.Exceptions;
 using YunKeEdu.Core.Models;
+using YunKeEdu.Core.Models.DTOs;
 
 
 namespace YunKeEdu.Api.Controllers;
@@ -16,16 +17,15 @@ public class UserController : ControllerBase
     public UserController(ISqlSugarClient db) => _db = db;
 
     [HttpGet("list")]
-    public async Task<ApiResponse<PagedResult<object>>> GetList([FromQuery] int page = 1, [FromQuery] int pageSize = 20,
-        [FromQuery] long? orgId = null, [FromQuery] int? role = null, [FromQuery] string? keyword = null)
+    public async Task<ApiResponse<PagedResult<object>>> GetList([FromQuery] PageRequest req, [FromQuery] long? orgId = null, [FromQuery] int? role = null)
     {
         var q = _db.Queryable<SysUser>().Where(x => !x.IsDeleted);
         if (orgId.HasValue) q = q.Where(x => x.OrgId == orgId);
         if (role.HasValue) q = q.Where(x => x.Role == role);
-        if (!string.IsNullOrEmpty(keyword)) q = q.Where(x => x.UserName.Contains(keyword) || x.RealName!.Contains(keyword) || x.Phone!.Contains(keyword));
+        if (!string.IsNullOrWhiteSpace(req.Keyword)) q = q.Where(x => x.UserName.Contains(req.Keyword!) || x.RealName!.Contains(req.Keyword!) || x.Phone!.Contains(req.Keyword!));
         RefAsync<int> total = 0;
-        var items = await q.OrderBy(x => x.Id).ToPageListAsync(page, pageSize, total);
-        return ApiResponse<PagedResult<object>>.Ok(new PagedResult<object>(items.Select(x => (object)new { x.Id, x.UserName, x.RealName, x.Phone, x.Avatar, x.Role, x.OrgId, x.CampusId, x.Status }).ToList(), total, page, pageSize));
+        var items = await q.OrderBy(x => x.Id).ToPageListAsync(req.Page, req.PageSize, total);
+        return ApiResponse<PagedResult<object>>.Ok(new PagedResult<object>(items.Select(x => (object)new { x.Id, x.UserName, x.RealName, x.Phone, x.Avatar, x.Role, x.OrgId, x.CampusId, x.Status }).ToList(), total, req.Page, req.PageSize));
     }
 
     [HttpGet("{id}")]

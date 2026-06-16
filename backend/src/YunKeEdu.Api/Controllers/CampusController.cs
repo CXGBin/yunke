@@ -1,3 +1,4 @@
+using YunKeEdu.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
@@ -36,7 +37,7 @@ public class CampusController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ApiResponse<bool>> Delete(long id)
     {
-        var campus = await _service.GetByIdAsync(id, GetUser().TenantId) ?? throw new Exception("校区不存在");
+        var campus = await _service.GetByIdAsync(id, GetUser().TenantId) ?? throw new BizException("校区不存在");
         // 软删除通过直接操作Db完成
         await _db.Updateable<Core.Entities.Campus>().SetColumns(c => new Core.Entities.Campus { IsDeleted = true, UpdatedAt = DateTime.Now }).Where(c => c.Id == id).ExecuteCommandAsync();
         return ApiResponse<bool>.Ok(true);
@@ -49,5 +50,5 @@ public class CampusController : ControllerBase
         return ApiResponse<bool>.Ok(true);
     }
 
-    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new Exception("未登录");
+    private CurrentUser GetUser() => HttpContext.Items["CurrentUser"] as CurrentUser ?? throw new BizException("未登录");
 }

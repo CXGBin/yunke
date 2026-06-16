@@ -68,6 +68,6 @@ export async function getMyWaitlist() {
   });
 }
 
-export async function getEnrollmentPage(params: any) {
+export async function getEnrollmentPage(params: API.PageParams & { courseId?: number }) {
   return request<API.PagedResult<any>>("/api/enrollment/page", { method: "GET", params });
 }

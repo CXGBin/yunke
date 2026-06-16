@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 
 /** 创建评价 (后端: POST /api/evaluation) */
-export async function createEvaluation(data: any) {
+export async function createEvaluation(data: Partial<API.Evaluation>) {
   return request('/api/evaluation', {
     method: 'POST',
     data,

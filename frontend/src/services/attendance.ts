@@ -54,7 +54,7 @@ export async function getLeavePage(params: API.PageParams) {
 }
 
 /** 创建请假 (后端: POST /api/leave) */
-export async function createLeave(data: any) {
+export async function createLeave(data: Partial<API.LeaveRequest>) {
   return request('/api/leave', {
     method: 'POST',
     data,
@@ -83,6 +83,6 @@ export async function approveLeave(id: number, data: { approve: boolean; remark?
     data,
   });
 }
-export async function getAttendancePage(params: any) {
+export async function getAttendancePage(params: API.PageParams & { studentId?: number }) {
   return request<API.PagedResult<any>>('/api/attendance/page', { method: 'GET', params });
 }

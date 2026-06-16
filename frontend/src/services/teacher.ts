@@ -16,7 +16,7 @@ export async function getTeacherDetail(id: number) {
 }
 
 /** 创建教师 (后端: POST /api/teacher) */
-export async function createTeacher(data: any) {
+export async function createTeacher(data: Partial<API.Teacher>) {
   return request('/api/teacher', {
     method: 'POST',
     data,
@@ -24,7 +24,7 @@ export async function createTeacher(data: any) {
 }
 
 /** 更新教师 (后端: PUT /api/teacher/{id}) */
-export async function updateTeacher(id: number, data: any) {
+export async function updateTeacher(id: number, data: Partial<API.Teacher>) {
   return request(`/api/teacher/${id}`, {
     method: 'PUT',
     data,
