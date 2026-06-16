@@ -41,7 +41,7 @@ export default function StudentManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await studentApi.getUsers({ page: params.current, pageSize: params.pageSize, keyword: params.realName, role: 4 });
+          const res = await studentApi.getUserPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName, role: 4 });
           return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}

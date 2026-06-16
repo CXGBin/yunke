@@ -10,10 +10,9 @@ import {
 import { Button, Tag, Space, message, Popconfirm, Card } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {
-  getCampusPage,
+  getCampusList,
   createCampus,
   updateCampus,
-  deleteCampus,
   updateCampusStatus,
 } from '@/services/campus';
 import { getOrgPage } from '@/services/organization';
@@ -33,16 +32,10 @@ const CampusManage: React.FC = () => {
           search={{ labelWidth: 'auto' }}
           request={async (params) => {
             try {
-              const res = await getCampusPage({
-                pageIndex: params.current,
-                pageSize: params.pageSize,
-                keyword: params.keyword,
-                orgId: params.orgId,
-                status: params.status,
-              });
+              const res = await getCampusList();
               return {
-                data: res?.items || [],
-                total: res?.total || 0,
+                data: res || [],
+                total: (res || []).length,
                 success: true,
               };
             } catch {
@@ -77,7 +70,7 @@ const CampusManage: React.FC = () => {
               valueType: 'select',
               request: async () => {
                 try {
-                  const res = await getOrgPage({ pageIndex: 1, pageSize: 200 });
+                  const res = await getOrgPage({ page: 1, pageSize: 200 });
                   return (res?.items || []).map((o) => ({ label: o.name, value: o.id }));
                 } catch {
                   return [];
@@ -160,19 +153,19 @@ const CampusManage: React.FC = () => {
                     <span style={{ color: '#ccc' }}>删除</span>
                   ) : (
                     <Popconfirm
-                      title="确认删除？"
+                      title="确认切换状态？"
                       onConfirm={async () => {
                         try {
-                          await deleteCampus(record.id);
-                          message.success('删除成功');
+                          await updateCampusStatus(record.id, record.status === 1 ? 0 : 1);
+                          message.success('操作成功');
                           return true;
                         } catch {
-                          message.error('删除失败');
+                          message.error('操作失败');
                           return false;
                         }
                       }}
                     >
-                      <a style={{ color: '#ff4d4f' }}>删除</a>
+                      <a style={{ color: record.status === 1 ? '#ff4d4f' : '#52c41a' }}>{record.status === 1 ? '停用' : '启用'}</a>
                     </Popconfirm>
                   )}
                 </Space>
@@ -223,7 +216,7 @@ const CampusManage: React.FC = () => {
             rules={[{ required: true, message: '请选择所属机构' }]}
             request={async () => {
               try {
-                const res = await getOrgPage({ pageIndex: 1, pageSize: 200 });
+                const res = await getOrgPage({ page: 1, pageSize: 200 });
                 return (res?.items || []).map((o) => ({ label: o.name, value: o.id }));
               } catch {
                 return [];

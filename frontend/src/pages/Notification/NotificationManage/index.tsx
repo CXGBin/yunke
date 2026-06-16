@@ -11,10 +11,10 @@ import {
 import { Button, Tag, Space, message, Popconfirm, Card } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
-  getNotificationPage,
-  createNotification,
-  updateNotification,
-  deleteNotification,
+  getNotificationTemplatePage,
+  createNotificationTemplate,
+  updateNotificationTemplate,
+  deleteNotificationTemplate,
 } from '@/services/notification';
 import type { ActionType } from '@ant-design/pro-components';
 
@@ -48,11 +48,11 @@ const NotificationManage: React.FC = () => {
           search={{ labelWidth: 'auto' }}
           request={async (params) => {
             try {
-              const res = await getNotificationPage({
-                pageIndex: params.current,
+              const res = await getNotificationTemplatePage({
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
-                templateType: params.templateType,
+                notifyType: params.templateType,
               });
               return {
                 data: res?.items || [],
@@ -78,13 +78,13 @@ const NotificationManage: React.FC = () => {
             },
             {
               title: '模板类型',
-              dataIndex: 'templateType',
+              dataIndex: 'notifyType',
               width: 110,
               valueType: 'select',
               fieldProps: { options: TEMPLATE_TYPE_OPTIONS },
               render: (_, record) => {
-                const t = TEMPLATE_TYPE_OPTIONS.find((o) => o.value === record.templateType);
-                return t ? <Tag>{t.label}</Tag> : record.templateType;
+                const t = TEMPLATE_TYPE_OPTIONS.find((o) => o.value === record.notifyType);
+                return t ? <Tag>{t.label}</Tag> : record.notifyType;
               },
             },
             {
@@ -133,7 +133,7 @@ const NotificationManage: React.FC = () => {
                     title="确认删除？"
                     onConfirm={async () => {
                       try {
-                        await deleteNotification(record.id);
+                        await deleteNotificationTemplate(record.id);
                         message.success('删除成功');
                         actionRef.current?.reload();
                       } catch {
@@ -166,7 +166,7 @@ const NotificationManage: React.FC = () => {
           expandable={{
             expandedRowRender: (record) => (
               <div style={{ padding: '0 16px' }}>
-                <p><strong>模板内容：</strong>{record.content || '暂无'}</p>
+                <p><strong>模板内容：</strong>{record.contentTemplate || '暂无'}</p>
                 <p><strong>变量：</strong>{record.variables || '无'}</p>
               </div>
             ),
@@ -180,9 +180,9 @@ const NotificationManage: React.FC = () => {
           onFinish={async (values: any) => {
             try {
               if (values.id) {
-                await updateNotification(values.id, values);
+                await updateNotificationTemplate(values.id, values);
               } else {
-                await createNotification(values);
+                await createNotificationTemplate(values);
               }
               message.success('保存成功');
               actionRef.current?.reload();
@@ -217,7 +217,7 @@ const NotificationManage: React.FC = () => {
             options={CHANNEL_OPTIONS}
           />
           <ProFormText name="title" label="标题" />
-          <ProFormTextArea name="content" label="模板内容" />
+          <ProFormTextArea name="contentTemplate" label="模板内容" />
           <ProFormText name="variables" label="变量列表" placeholder="如: {{courseName}}, {{teacherName}}" />
         </ModalForm>
       </Card>

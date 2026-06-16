@@ -39,7 +39,7 @@ const OrgList: React.FC = () => {
           request={async (params) => {
             try {
               const res = await getOrgPage({
-                pageIndex: params.current,
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
                 status: params.status,

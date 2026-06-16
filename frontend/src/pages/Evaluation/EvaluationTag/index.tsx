@@ -24,7 +24,7 @@ export default function EvaluationTagManage() {
       title: '操作', width: 150, render: (_, r) => (
         <Space>
           <a onClick={async () => { message.info('编辑功能开发中'); }}>编辑</a>
-          <Popconfirm title="确认删除?" onConfirm={async () => { await evaluationApi.deleteTag(r.id); message.success('删除成功'); window.location.reload(); }}>
+          <Popconfirm title="确认删除?" onConfirm={async () => { await evaluationApi.deleteEvaluationTag(r.id); message.success('删除成功'); window.location.reload(); }}>
             <a style={{ color: '#ff4d4f' }}>删除</a>
           </Popconfirm>
         </Space>
@@ -40,7 +40,7 @@ export default function EvaluationTagManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await evaluationApi.getTags({ page: params.current, pageSize: params.pageSize });
+          const res = await evaluationApi.getEvaluationTags({ page: params.current, pageSize: params.pageSize });
           return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}

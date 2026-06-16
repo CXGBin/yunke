@@ -10,14 +10,7 @@ export async function login(params: API.LoginParams) {
 
 /** 获取当前用户信息 */
 export async function getCurrentUser() {
-  return request<API.CurrentUser>('/api/auth/me', {
+  return request<API.CurrentUser>('/api/auth/user-info', {
     method: 'GET',
-  });
-}
-
-/** 退出登录 */
-export async function logout() {
-  return request('/api/auth/logout', {
-    method: 'POST',
   });
 }

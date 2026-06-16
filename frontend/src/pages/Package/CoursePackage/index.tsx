@@ -15,7 +15,7 @@ const CoursePackagePage: React.FC = () => {
           request={async (params) => {
             try {
               const res = await getCoursePackagePage({
-                pageIndex: params.current,
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
                 orgId: params.orgId,
@@ -77,7 +77,6 @@ const CoursePackagePage: React.FC = () => {
             },
           ]}
           pagination={{ defaultPageSize: 10, showSizeChanger: true }}
-          search={false}
         />
       </Card>
     </PageContainer>

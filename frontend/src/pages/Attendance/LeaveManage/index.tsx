@@ -40,7 +40,7 @@ export default function LeaveManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await leaveApi.getLeaves({ page: params.current, pageSize: params.pageSize });
+          const res = await leaveApi.getLeavePage({ page: params.current, pageSize: params.pageSize });
           return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}

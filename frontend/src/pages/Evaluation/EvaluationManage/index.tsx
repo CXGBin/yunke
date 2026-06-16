@@ -15,7 +15,7 @@ const EvaluationManage: React.FC = () => {
           request={async (params) => {
             try {
               const res = await getEvaluationPage({
-                pageIndex: params.current,
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
                 minScore: params.minScore,

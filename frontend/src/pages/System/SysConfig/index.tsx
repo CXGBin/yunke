@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
 import {
   ProTable,
@@ -6,9 +6,9 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Button, Space, message, Popconfirm, Card, Tag } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getConfigPage, createConfig, updateConfig, deleteConfig } from '@/services/sysConfig';
+import { Button, Space, message, Card, Tag } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import { getSysConfigList, updateSysConfig } from '@/services/sysConfig';
 import type { ActionType } from '@ant-design/pro-components';
 
 const CONFIG_GROUP_OPTIONS = [
@@ -36,15 +36,12 @@ const SysConfig: React.FC = () => {
           }}
           request={async (params) => {
             try {
-              const res = await getConfigPage({
-                pageIndex: params.current,
-                pageSize: params.pageSize,
-                configGroup: params.configGroup,
-                keyword: params.keyword,
-              });
+              const group = params.configGroup as string | undefined;
+              const res = await getSysConfigList(group);
+              const items = (res as any[]) || [];
               return {
-                data: res?.items || [],
-                total: res?.total || 0,
+                data: items,
+                total: items.length,
                 success: true,
               };
             } catch {
@@ -91,14 +88,13 @@ const SysConfig: React.FC = () => {
             },
             {
               title: '操作',
-              width: 140,
+              width: 100,
               search: false,
               render: (_, record) => (
                 <Space>
                   <a
                     onClick={() => {
                       modalRef.current?.setFieldsValue({
-                        id: record.id,
                         configKey: record.configKey,
                         configValue: record.configValue,
                         configGroup: record.configGroup,
@@ -109,40 +105,11 @@ const SysConfig: React.FC = () => {
                   >
                     <EditOutlined /> 编辑
                   </a>
-                  <Popconfirm
-                    title="确认删除？"
-                    onConfirm={async () => {
-                      try {
-                        await deleteConfig(record.id);
-                        message.success('删除成功');
-                        actionRef.current?.reload();
-                      } catch {
-                        message.error('删除失败');
-                      }
-                    }}
-                  >
-                    <a style={{ color: '#ff4d4f' }}>
-                      <DeleteOutlined /> 删除
-                    </a>
-                  </Popconfirm>
                 </Space>
               ),
             },
           ]}
-          toolBarRender={() => [
-            <Button
-              key="add"
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                modalRef.current?.resetFields();
-                modalRef.current?.open();
-              }}
-            >
-              新增配置
-            </Button>,
-          ]}
-          pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+          pagination={false}
         />
 
         <ModalForm
@@ -152,11 +119,7 @@ const SysConfig: React.FC = () => {
           formRef={modalRef}
           onFinish={async (values: any) => {
             try {
-              if (values.id) {
-                await updateConfig(values.id, values);
-              } else {
-                await createConfig(values);
-              }
+              await updateSysConfig(values);
               message.success('保存成功');
               actionRef.current?.reload();
               return true;
@@ -166,12 +129,11 @@ const SysConfig: React.FC = () => {
             }
           }}
         >
-          <ProFormText name="id" hidden />
           <ProFormText
             name="configKey"
             label="配置键"
             rules={[{ required: true, message: '请输入配置键' }]}
-            disabled={(form) => !!form.getFieldValue('id')}
+            disabled
           />
           <ProFormText
             name="configValue"

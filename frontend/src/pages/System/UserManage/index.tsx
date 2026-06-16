@@ -10,7 +10,7 @@ import {
 } from '@ant-design/pro-components';
 import { Button, Tag, Space, message, Popconfirm, Card } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getUserPage, updateUserStatus, deleteUser, resetUserPassword } from '@/services/user';
+import { getUserList, updateUser, deleteUser, resetUserPassword } from '@/services/user';
 
 const ROLE_OPTIONS = [
   { label: '平台管理员', value: 1 },
@@ -38,8 +38,8 @@ const UserManage: React.FC = () => {
           }}
           request={async (params) => {
             try {
-              const res = await getUserPage({
-                pageIndex: params.current,
+              const res = await getUserList({
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
                 role: params.role,
@@ -129,7 +129,7 @@ const UserManage: React.FC = () => {
                     title={record.status === 1 ? '确认停用？' : '确认启用？'}
                     onConfirm={async () => {
                       try {
-                        await updateUserStatus(record.id, record.status === 1 ? 0 : 1);
+                        await updateUser(record.id, { status: record.status === 1 ? 0 : 1 });
                         message.success('操作成功');
                         return true;
                       } catch {

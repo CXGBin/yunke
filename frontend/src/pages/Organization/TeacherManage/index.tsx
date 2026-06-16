@@ -53,7 +53,7 @@ export default function TeacherManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await teacherApi.getUsers({ page: params.current, pageSize: params.pageSize, keyword: params.realName, role: 2 });
+          const res = await teacherApi.getUserPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName, role: 2 });
           return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}

@@ -15,7 +15,7 @@ const AttendanceManage: React.FC = () => {
           request={async (params) => {
             try {
               const res = await getAttendancePage({
-                pageIndex: params.current,
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
                 attendanceStatus: params.attendanceStatus,

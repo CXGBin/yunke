@@ -14,7 +14,7 @@ const Login: React.FC = () => {
     try {
       const res = await login(values);
       if (res) {
-        localStorage.setItem(TOKEN_KEY, res.accessToken);
+        localStorage.setItem(TOKEN_KEY, res.token);
         message.success('登录成功');
         await refresh();
         history.push('/dashboard');

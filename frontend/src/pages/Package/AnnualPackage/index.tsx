@@ -43,7 +43,7 @@ const AnnualPackage: React.FC = () => {
           request={async (params) => {
             try {
               const res = await getOrgPackagePage({
-                pageIndex: params.current,
+                page: params.current,
                 pageSize: params.pageSize,
                 keyword: params.keyword,
                 status: params.status,
@@ -203,7 +203,7 @@ const AnnualPackage: React.FC = () => {
           request={async (params) => {
             try {
               const res = await getSubscriptionHistory({
-                pageIndex: params.current,
+                page: params.current,
                 pageSize: params.pageSize,
               });
               return {
