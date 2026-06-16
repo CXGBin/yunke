@@ -44,3 +44,19 @@ export async function resetUserPassword(id: number) {
     method: 'POST',
   });
 }
+
+/** 获取用户列表(通用,支持role过滤) */
+export async function getUsers(params: any) {
+  return request<API.PagedResult<any>>('/api/user/page', {
+    method: 'GET',
+    params,
+  });
+}
+
+/** 家长列表 */
+export async function getParents(params: any) {
+  return request<API.PagedResult<any>>('/api/parent/page', {
+    method: 'GET',
+    params,
+  });
+}

@@ -14,3 +14,18 @@ export async function getEvaluationDetail(id: number) {
     method: 'GET',
   });
 }
+
+/** 评价标签列表 */
+export async function getTags(params: any) {
+  return request<API.PagedResult<any>>('/api/evaluation-tag/page', {
+    method: 'GET',
+    params,
+  });
+}
+
+/** 删除评价标签 */
+export async function deleteTag(id: number) {
+  return request(`/api/evaluation-tag/${id}`, {
+    method: 'DELETE',
+  });
+}

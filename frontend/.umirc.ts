@@ -51,6 +51,9 @@ export default defineConfig({
           routes: [
             { path: '/organization/list', name: '机构列表', component: './Organization/OrgList' },
             { path: '/organization/campus', name: '校区管理', component: './Organization/CampusManage' },
+            { path: '/organization/teachers', name: '教师管理', component: './Organization/TeacherManage' },
+            { path: '/organization/students', name: '学生管理', component: './Organization/StudentManage' },
+            { path: '/organization/parents', name: '家长管理', component: './Organization/ParentManage' },
           ],
         },
         {
@@ -68,7 +71,9 @@ export default defineConfig({
           icon: 'book',
           routes: [
             { path: '/course/publish', name: '课程发布', component: './Course/CoursePublish' },
+            { path: '/course/category', name: '课程分类', component: './Course/CourseCategory' },
             { path: '/course/enrollment', name: '报名管理', component: './Course/Enrollment' },
+            { path: '/course/lessons', name: '课时管理', component: './Course/LessonUnit' },
           ],
         },
         {
@@ -85,6 +90,7 @@ export default defineConfig({
           icon: 'check-circle',
           routes: [
             { path: '/attendance/manage', name: '签到管理', component: './Attendance/AttendanceManage' },
+            { path: '/attendance/leave', name: '请假管理', component: './Attendance/LeaveManage' },
           ],
         },
         {
@@ -93,6 +99,7 @@ export default defineConfig({
           icon: 'star',
           routes: [
             { path: '/evaluation/manage', name: '评价列表', component: './Evaluation/EvaluationManage' },
+            { path: '/evaluation/tags', name: '评价标签', component: './Evaluation/EvaluationTag' },
           ],
         },
         {
@@ -129,7 +136,7 @@ export default defineConfig({
   ],
   proxy: {
     '/api': {
-      target: 'http://localhost:5000',
+      target: 'http://localhost:5290',
       changeOrigin: true,
     },
   },

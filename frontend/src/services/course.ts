@@ -29,3 +29,25 @@ export async function getCoursePackageDetail(id: number) {
     method: 'GET',
   });
 }
+
+/** 课程分类树 */
+export async function getCategoryTree() {
+  return request<any[]>('/api/course-category/tree', {
+    method: 'GET',
+  });
+}
+
+/** 删除分类 */
+export async function deleteCategory(id: number) {
+  return request(`/api/course-category/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+/** 课时列表 */
+export async function getLessons(params: any) {
+  return request<API.PagedResult<any>>('/api/lesson-unit/page', {
+    method: 'GET',
+    params,
+  });
+}

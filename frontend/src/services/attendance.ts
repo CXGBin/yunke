@@ -14,3 +14,11 @@ export async function getAttendanceDetail(id: number) {
     method: 'GET',
   });
 }
+
+/** 请假记录列表 */
+export async function getLeaves(params: any) {
+  return request<API.PagedResult<any>>('/api/leave/page', {
+    method: 'GET',
+    params,
+  });
+}
