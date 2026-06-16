@@ -4,11 +4,6 @@ import { message } from 'antd';
 
 const TOKEN_KEY = 'yunke_edu_token';
 
-/** 获取 Token */
-export function getAuthority(): string | undefined {
-  return localStorage.getItem(TOKEN_KEY) || undefined;
-}
-
 /** 请求拦截器：自动注入 Token */
 const requestInterceptor = (url: string, options: any) => {
   const token = localStorage.getItem(TOKEN_KEY);
