@@ -5,6 +5,9 @@ export default defineConfig({
     theme: {
       token: {
         colorPrimary: '#1677ff',
+        fontSize: 13,
+        fontSizeSM: 12,
+        fontSizeLG: 14,
       },
     },
   },
