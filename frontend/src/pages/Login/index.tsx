@@ -4,6 +4,7 @@ import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import { LockOutlined, MobileOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { login } from '@/services/auth';
+import { setPermissions } from '@/utils/access';
 
 const TOKEN_KEY = 'yunke_edu_token';
 
@@ -15,6 +16,9 @@ const Login: React.FC = () => {
       const res = await login(values);
       if (res) {
         localStorage.setItem(TOKEN_KEY, res.token);
+        if (res.permissions) {
+          setPermissions(res.permissions.permissions || []);
+        }
         message.success('登录成功');
         await refresh();
         history.push('/dashboard');

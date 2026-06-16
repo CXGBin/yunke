@@ -61,10 +61,68 @@ declare namespace API {
     password: string;
   }
 
-  /** 后端 LoginResponse: token + userInfo */
+  /** 后端 LoginResponse: token + userInfo + permissions */
   interface LoginResult {
     token: string;
     userInfo: CurrentUser;
+    permissions?: UserPermission;
+  }
+
+  /** 用户权限信息 */
+  interface UserPermission {
+    roles: RoleItem[];
+    menus: MenuItem[];
+    permissions: string[];
+  }
+
+  interface RoleItem {
+    id: number;
+    tenantId: number;
+    roleName: string;
+    roleCode?: string;
+    status: number;
+  }
+
+  /** 菜单树节点 */
+  interface MenuItem {
+    id: number;
+    parentId: number;
+    menuType: number; // 1=目录 2=菜单 3=按钮
+    name: string;
+    path?: string;
+    component?: string;
+    icon?: string;
+    sortOrder: number;
+    permission?: string;
+    btnType?: string;
+    visible: number;
+    status: number;
+    children: MenuItem[];
+  }
+
+  interface RoleParams {
+    roleName: string;
+    roleCode?: string;
+    description?: string;
+    sortOrder?: number;
+    status?: number;
+    dataScope?: number;
+    menuIds?: number[];
+  }
+
+  interface MenuParams {
+    parentId: number;
+    menuType: number;
+    name: string;
+    path?: string;
+    component?: string;
+    icon?: string;
+    sortOrder?: number;
+    permission?: string;
+    btnType?: string;
+    visible?: number;
+    status?: number;
+    description?: string;
   }
 
   // ============ 机构 (后端 OrgDto) ============

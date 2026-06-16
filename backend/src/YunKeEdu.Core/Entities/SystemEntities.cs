@@ -206,3 +206,109 @@ public class EvaluationTag
     public int Status { get; set; } = 1;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 }
+
+// ======================== 权限控制实体 ========================
+
+/// <summary>系统菜单表（树形结构）</summary>
+[SugarTable("SysMenu")]
+public class SysMenu
+{
+    [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+    public long Id { get; set; }
+
+    /// <summary>父菜单ID，0表示顶级</summary>
+    public long ParentId { get; set; }
+
+    /// <summary>菜单类型：1=目录 2=菜单 3=按钮</summary>
+    public int MenuType { get; set; }
+
+    [SugarColumn(Length = 50, IsNullable = false)]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>路由路径（菜单类型2时使用）</summary>
+    [SugarColumn(Length = 200, IsNullable = true)]
+    public string? Path { get; set; }
+
+    /// <summary>组件路径（菜单类型2时使用）</summary>
+    [SugarColumn(Length = 200, IsNullable = true)]
+    public string? Component { get; set; }
+
+    /// <summary>菜单图标</summary>
+    [SugarColumn(Length = 50, IsNullable = true)]
+    public string? Icon { get; set; }
+
+    /// <summary>排序号</summary>
+    public int SortOrder { get; set; }
+
+    /// <summary>权限标识（按钮权限码，如 sys:user:add）</summary>
+    [SugarColumn(Length = 100, IsNullable = true)]
+    public string? Permission { get; set; }
+
+    /// <summary>按钮类型：view/edit/delete/add/import/export</summary>
+    [SugarColumn(Length = 20, IsNullable = true)]
+    public string? BtnType { get; set; }
+
+    /// <summary>是否可见：0隐藏 1显示</summary>
+    public int Visible { get; set; } = 1;
+
+    /// <summary>状态：0禁用 1启用</summary>
+    public int Status { get; set; } = 1;
+
+    [SugarColumn(Length = 200, IsNullable = true)]
+    public string? Description { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+}
+
+/// <summary>系统角色表</summary>
+[SugarTable("SysRole")]
+public class SysRole
+{
+    [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+    public long Id { get; set; }
+
+    /// <summary>所属租户ID（平台角色为0）</summary>
+    public long TenantId { get; set; }
+
+    [SugarColumn(Length = 50, IsNullable = false)]
+    public string RoleName { get; set; } = string.Empty;
+
+    [SugarColumn(Length = 100, IsNullable = true)]
+    public string? RoleCode { get; set; }
+
+    [SugarColumn(Length = 200, IsNullable = true)]
+    public string? Description { get; set; }
+
+    public int SortOrder { get; set; }
+    public int Status { get; set; } = 1;
+
+    /// <summary>数据范围：0=全部 1=本机构 2=本校区 3=仅本人</summary>
+    public int DataScope { get; set; } = 1;
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
+}
+
+/// <summary>角色-菜单关联表</summary>
+[SugarTable("SysRoleMenu")]
+public class SysRoleMenu
+{
+    [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+    public long Id { get; set; }
+    public long RoleId { get; set; }
+    public long MenuId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+}
+
+/// <summary>用户-角色关联表（支持一个用户多个角色）</summary>
+[SugarTable("SysUserRole")]
+public class SysUserRole
+{
+    [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+    public long Id { get; set; }
+    public long UserId { get; set; }
+    public long RoleId { get; set; }
+    public long TenantId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+}

@@ -14,7 +14,12 @@ namespace YunKeEdu.Application.Services;
 public class AuthService : BaseService
 {
     private readonly IJwtHelper _jwtHelper;
-    public AuthService(ISqlSugarClient db, IJwtHelper jwtHelper) : base(db) => _jwtHelper = jwtHelper;
+    private readonly IPermissionService _permissionSvc;
+    public AuthService(ISqlSugarClient db, IJwtHelper jwtHelper, IPermissionService permissionSvc) : base(db)
+    {
+        _jwtHelper = jwtHelper;
+        _permissionSvc = permissionSvc;
+    }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest req, HttpContext ctx)
     {
@@ -188,6 +193,7 @@ public class AuthService : BaseService
         };
         var token = _jwtHelper.GenerateToken(current);
         var userInfo = await GetUserInfoAsync(current);
-        return new LoginResponse { Token = token, UserInfo = userInfo };
+        var permissions = await _permissionSvc.GetUserPermissionsAsync(user.Id, user.TenantId);
+        return new LoginResponse { Token = token, UserInfo = userInfo, Permissions = permissions };
     }
 }

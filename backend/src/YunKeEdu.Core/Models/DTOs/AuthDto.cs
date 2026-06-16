@@ -66,6 +66,8 @@ public class LoginResponse
 {
     public string Token { get; set; } = string.Empty;
     public UserInfoDto UserInfo { get; set; } = new();
+    /// <summary>用户权限信息（角色+菜单+权限码）</summary>
+    public UserPermissionDto? Permissions { get; set; }
 }
 
 public class UserInfoDto

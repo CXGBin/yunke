@@ -40,6 +40,7 @@ export default defineConfig({
           icon: 'setting',
           routes: [
             { path: '/system/users', name: '用户管理', component: './System/UserManage' },
+            { path: '/system/menu', name: '菜单管理', component: './System/MenuManage' },
             { path: '/system/roles', name: '角色管理', component: './System/RoleManage' },
             { path: '/system/config', name: '系统配置', component: './System/SysConfig' },
           ],
@@ -62,6 +63,7 @@ export default defineConfig({
           icon: 'crown',
           routes: [
             { path: '/package/annual', name: '年费套餐', component: './Package/AnnualPackage' },
+            { path: '/package/org', name: '机构套餐', component: './Package/OrgPackage' },
             { path: '/package/course', name: '课程套餐', component: './Package/CoursePackage' },
           ],
         },
