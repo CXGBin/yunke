@@ -1,6 +1,7 @@
 // YunKeEdu.Api - Program.cs 入口文件
 using Hangfire;
 using SqlSugar;
+using YunKeEdu.Application.Services;
 using YunKeEdu.Core.Entities;
 using YunKeEdu.Infrastructure.Database;
 using YunKeEdu.Infrastructure.Hangfire;
@@ -28,6 +29,20 @@ builder.Services.AddHangfireService(builder.Configuration);
 
 // 控制器（注册HttpContextAccessor）
 builder.Services.AddHttpContextAccessor();
+
+// 注册所有Service
+var serviceAssembly = typeof(BaseService).Assembly;
+var serviceTypes = serviceAssembly.GetTypes()
+    .Where(t => !t.IsAbstract && !t.IsGenericType && t.IsClass && t.Name.EndsWith("Service") && t != typeof(BaseService));
+foreach (var st in serviceTypes)
+{
+    var interfaces = st.GetInterfaces().Where(i => i.Name.EndsWith("Service"));
+    if (interfaces.Any())
+        foreach (var i in interfaces) builder.Services.AddScoped(i, st);
+    else
+        builder.Services.AddScoped(st);
+}
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -82,22 +97,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ISqlSugarClient>();
-    // CodeFirst建表
-    db.CodeFirst.InitTables(
-        typeof(Organization), typeof(Campus), typeof(SysUser), typeof(UserOrgBinding),
-        typeof(InvitationRecord), typeof(ParentStudentRelation), typeof(OrgConfig),
-        typeof(SysConfig), typeof(EvaluationTag),
-        typeof(OrgPackage), typeof(OrgPackageFeature), typeof(OrgSubscription), typeof(PackageUpgradeOrder),
-        typeof(Course), typeof(CourseCategory), typeof(CourseAttachment),
-        typeof(CoursePackage), typeof(CoursePackageItem),
-        typeof(CourseEnrollment), typeof(WaitList),
-        typeof(LessonUnit), typeof(CourseSchedule), typeof(ScheduleRecurrence), typeof(ScheduleChangeLog),
-        typeof(Attendance), typeof(LeaveRequest), typeof(SignInQRCode),
-        typeof(CourseEvaluation), typeof(EvaluationReply),
-        typeof(CourseFeeSettlement), typeof(TeacherWallet), typeof(FeeSettlementRecord),
-        typeof(StatisticsDailySnapshot), typeof(StatisticsCourseSnapshot),
-        typeof(NotificationTemplate), typeof(NotificationLog), typeof(NotificationConfig)
-    );
+    // CodeFirst建表（数据库已通过init.sql创建，启动时不再自动迁移）
+    // db.CodeFirst.InitTables(/* 已通过scripts/init.sql手动创建 */);
     // 种子数据
     await DbSeed.SeedAsync(db);
 }
