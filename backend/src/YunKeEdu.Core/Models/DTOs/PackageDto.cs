@@ -31,6 +31,7 @@ public class CreatePackageRequest
     public int MaxNotificationTypes { get; set; }
     public byte MaxPushChannels { get; set; }
     public string? AnalyticsDimensions { get; set; }
+    public bool EnableEvaluation { get; set; }
     public int SortOrder { get; set; }
 }
 
@@ -51,6 +52,7 @@ public class PackageDto
     public int MaxNotificationTypes { get; set; }
     public byte MaxPushChannels { get; set; }
     public string? AnalyticsDimensions { get; set; }
+    public bool EnableEvaluation { get; set; }
     public int SortOrder { get; set; }
     public int Status { get; set; }
     public List<PackageFeatureDto> Features { get; set; } = new();

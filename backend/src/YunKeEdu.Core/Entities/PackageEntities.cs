@@ -25,6 +25,8 @@ public class OrgPackage
     public byte MaxPushChannels { get; set; }
     [SugarColumn(Length = 500, IsNullable = true, DefaultValue = "basic")]
     public string? AnalyticsDimensions { get; set; } = "basic";
+    /// <summary>评价功能是否可用（Ultra/Ultimate可用）</summary>
+    public bool EnableEvaluation { get; set; }
     public int SortOrder { get; set; }
     public int Status { get; set; } = 1;
     public DateTime CreatedAt { get; set; } = DateTime.Now;

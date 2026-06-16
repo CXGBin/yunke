@@ -248,6 +248,7 @@ declare namespace API {
     maxNotificationTypes: number;
     maxPushChannels: number;
     analyticsDimensions?: string;
+    enableEvaluation?: boolean;
     sortOrder: number;
     status: number;
     features?: OrgPackageFeature[];
