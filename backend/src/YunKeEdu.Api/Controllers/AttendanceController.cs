@@ -12,6 +12,13 @@ public class AttendanceController : ControllerBase
     private readonly AttendanceService _service;
     public AttendanceController(AttendanceService service) => _service = service;
 
+    [HttpGet("page")]
+    public async Task<ApiResponse<PagedResult<object>>> Page([FromQuery] PageRequest req)
+    {
+        var items = await _service.GetPagedListAsync(req, GetUser().TenantId);
+        return ApiResponse<PagedResult<object>>.Ok(items);
+    }
+
     [HttpPost("sign-in")]
     public async Task<ApiResponse<bool>> SignIn([FromBody] SignInRequest req)
     {

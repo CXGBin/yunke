@@ -114,8 +114,7 @@ public class CreateTeacherRequest
     [StringLength(500)]
     public string? Avatar { get; set; }
 
-    [StringLength(20)]
-    public string? Gender { get; set; }
+    public int Gender { get; set; }
 
     [StringLength(500)]
     public string? Introduction { get; set; }

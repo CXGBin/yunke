@@ -173,4 +173,17 @@ public class EnrollmentService : BaseService
                 Status = w.Status, JoinedAt = w.JoinedAt, NotifiedAt = w.NotifiedAt, ExpiresAt = w.ExpiresAt,
             }).ToListAsync();
     }
+
+    public async Task<PagedResult<object>> GetPagedListAsync(PageRequest req, long tenantId)
+    {
+        var query = Db.Queryable<CourseEnrollment>().Where(e => e.TenantId == tenantId);
+        if (!string.IsNullOrWhiteSpace(req.Keyword))
+            query = query.Where(e => e.Remark!.Contains(req.Keyword));
+        var total = await query.CountAsync();
+        var items = await query.OrderByDescending(e => e.CreatedAt)
+            .ToPageListAsync(req.Page, req.PageSize);
+        var dtos = items.Select(e => (object)new { e.Id, e.CourseId, e.StudentId, e.ParentId, e.Status, e.Remark, e.CreatedAt }).ToList();
+        return new PagedResult<object>(dtos, total, req.Page, req.PageSize);
+    }
+
 }

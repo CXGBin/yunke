@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using YunKeEdu.Core.Models;
 using YunKeEdu.Core.Models.DTOs;
 using YunKeEdu.Application.Services;
+using SqlSugar;
 
 namespace YunKeEdu.Api.Controllers;
 
@@ -10,7 +11,8 @@ namespace YunKeEdu.Api.Controllers;
 public class CampusController : ControllerBase
 {
     private readonly CampusService _service;
-    public CampusController(CampusService service) => _service = service;
+    private readonly ISqlSugarClient _db;
+    public CampusController(CampusService service, ISqlSugarClient db) { _service = service; _db = db; }
 
     [HttpGet("list")]
     public async Task<ApiResponse<List<CampusDto>>> List()
@@ -28,6 +30,15 @@ public class CampusController : ControllerBase
     public async Task<ApiResponse<bool>> Update(long id, [FromBody] UpdateCampusRequest req)
     {
         await _service.UpdateAsync(id, req, GetUser());
+        return ApiResponse<bool>.Ok(true);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ApiResponse<bool>> Delete(long id)
+    {
+        var campus = await _service.GetByIdAsync(id, GetUser().TenantId) ?? throw new Exception("校区不存在");
+        // 软删除通过直接操作Db完成
+        await _db.Updateable<Core.Entities.Campus>().SetColumns(c => new Core.Entities.Campus { IsDeleted = true, UpdatedAt = DateTime.Now }).Where(c => c.Id == id).ExecuteCommandAsync();
         return ApiResponse<bool>.Ok(true);
     }
 

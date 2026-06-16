@@ -12,6 +12,13 @@ public class EnrollmentController : ControllerBase
     private readonly EnrollmentService _service;
     public EnrollmentController(EnrollmentService service) => _service = service;
 
+    [HttpGet("page")]
+    public async Task<ApiResponse<PagedResult<object>>> Page([FromQuery] PageRequest req)
+    {
+        var items = await _service.GetPagedListAsync(req, GetUser().TenantId);
+        return ApiResponse<PagedResult<object>>.Ok(items);
+    }
+
     [HttpPost]
     public async Task<ApiResponse<long>> Enroll([FromBody] CreateEnrollmentRequest req)
         => ApiResponse<long>.Ok(await _service.EnrollAsync(req, GetUser()));

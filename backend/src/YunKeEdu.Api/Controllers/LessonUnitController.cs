@@ -17,7 +17,7 @@ public class LessonUnitController : ControllerBase
         => ApiResponse<List<LessonUnitDto>>.Ok(await _service.GetByCourseAsync(courseId, GetUser()));
 
     [HttpPost("batch-generate")]
-    public async Task<ApiResponse<bool>> BatchGenerate(long courseId, [FromBody] BatchGenerateLessonRequest req)
+    public async Task<ApiResponse<bool>> BatchGenerate([FromQuery] long courseId, [FromBody] BatchGenerateLessonRequest req)
     {
         await _service.BatchGenerateAsync(courseId, req, GetUser());
         return ApiResponse<bool>.Ok(true);

@@ -126,4 +126,15 @@ public class AttendanceService : BaseService
         var rate = totalAttendance > 0 ? Math.Round((decimal)present * 100 / totalAttendance, 2) : 0;
         return new { TotalSchedules = schedules.Count, TotalAttendance = totalAttendance, PresentCount = present, AttendanceRate = rate };
     }
+
+    public async Task<PagedResult<object>> GetPagedListAsync(PageRequest req, long tenantId)
+    {
+        var query = Db.Queryable<Attendance>().Where(a => a.TenantId == tenantId);
+        var total = await query.CountAsync();
+        var items = await query.OrderByDescending(a => a.CreatedAt)
+            .ToPageListAsync(req.Page, req.PageSize);
+        var dtos = items.Select(a => (object)new { a.Id, a.ScheduleId, a.StudentId, a.Status, a.SignMethod, a.Remark, a.CreatedAt }).ToList();
+        return new PagedResult<object>(dtos, total, req.Page, req.PageSize);
+    }
+
 }

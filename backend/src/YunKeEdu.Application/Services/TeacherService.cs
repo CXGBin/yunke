@@ -59,7 +59,7 @@ public class TeacherService : BaseService
             var newUser = new SysUser
             {
                 UserName = $"teacher_{req.Phone}", Password = string.Empty, RealName = req.RealName,
-                Phone = req.Phone, Avatar = req.Avatar, Gender = req.Gender switch { "男" => 1, "女" => 2, _ => 0 },
+                Phone = req.Phone, Avatar = req.Avatar, Gender = req.Gender,
                 Role = 0, Status = 1, TenantId = user.TenantId, OrgId = user.OrgId,
                 CampusId = req.CampusId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now,
             };
@@ -81,7 +81,7 @@ public class TeacherService : BaseService
     {
         var u = await Db.Queryable<SysUser>().InSingleAsync(id) ?? throw new BizException("教师不存在");
         u.RealName = req.RealName; u.Phone = req.Phone; u.Avatar = req.Avatar;
-        u.Gender = req.Gender switch { "男" => 1, "女" => 2, _ => 0 };
+        u.Gender = req.Gender;
         u.UpdatedAt = DateTime.Now;
         await Db.Updateable(u).ExecuteCommandAsync();
 

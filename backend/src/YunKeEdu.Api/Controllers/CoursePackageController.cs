@@ -13,7 +13,7 @@ public class CoursePackageController : ControllerBase
     public CoursePackageController(CoursePackageService service) => _service = service;
 
     [HttpGet("page")]
-    public async Task<ApiResponse<PagedResult<CoursePackageDto>>> Page([FromQuery] PageRequest req)
+    public async Task<ApiResponse<PagedResult<CoursePackageDto>>> Page([FromQuery] PageRequest req, [FromQuery] long? orgId)
         => ApiResponse<PagedResult<CoursePackageDto>>.Ok(await _service.GetPageAsync(req, GetUser()));
 
     [HttpGet("{id}")]

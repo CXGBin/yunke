@@ -7,6 +7,7 @@ using YunKeEdu.Core.Models.DTOs;
 namespace YunKeEdu.Api.Controllers;
 
 /// <summary>菜单管理</summary>
+[ApiController]
 [Route("api/[controller]")]
 public class MenuController : ControllerBase
 {
@@ -35,6 +36,7 @@ public class MenuController : ControllerBase
 }
 
 /// <summary>角色管理</summary>
+[ApiController]
 [Route("api/[controller]")]
 public class RoleController : ControllerBase
 {

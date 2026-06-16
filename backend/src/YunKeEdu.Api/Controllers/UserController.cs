@@ -67,6 +67,17 @@ public class UserController : ControllerBase
         return ApiResponse<bool>.Ok(true);
     }
 
+    [HttpPut("{id}/status")]
+    public async Task<ApiResponse<bool>> UpdateStatus(long id, [FromBody] UpdateStatusDto req)
+    {
+        var user = await _db.Queryable<SysUser>().FirstAsync(u => u.Id == id)
+            ?? throw new BizException("用户不存在");
+        user.Status = req.Status;
+        user.UpdatedAt = DateTime.Now;
+        await _db.Updateable(user).UpdateColumns(u => new { u.Status, u.UpdatedAt }).ExecuteCommandAsync();
+        return ApiResponse<bool>.Ok(true);
+    }
+
     [HttpPost("{id}/reset-password")]
     public async Task<ApiResponse<bool>> ResetPassword(long id, [FromBody] ResetPwdDto req)
     {
@@ -80,5 +91,7 @@ public class UserController : ControllerBase
 }
 
 public class CreateUserDto { public string? UserName { get; set; } public string? RealName { get; set; } public string? Phone { get; set; } public string? Password { get; set; } public int Role { get; set; } public long? OrgId { get; set; } public long? CampusId { get; set; } }
+public class UpdateStatusDto { public int Status { get; set; } }
+
 public class UpdateUserDto { public string? RealName { get; set; } public string? NickName { get; set; } public string? Avatar { get; set; } public string? Phone { get; set; } public int? Gender { get; set; } public DateTime? BirthDate { get; set; } public string? Grade { get; set; } public int? Status { get; set; } }
 public class ResetPwdDto { public string? NewPassword { get; set; } }

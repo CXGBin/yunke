@@ -30,7 +30,6 @@ export async function updateSysConfig(data: { configKey: string; configValue: st
     data,
   });
 }
-export const getConfigPage = getSysConfigs;
-export const createConfig = createSysConfig;
+export const getConfigPage = getSysConfigList;
 export const updateConfig = updateSysConfig;
 export async function deleteConfig(id: number) { return request(`/api/system/config/${id}`, { method: "DELETE" }); }

@@ -47,6 +47,35 @@ declare namespace API {
     bindings?: UserOrgInfo[];
   }
 
+
+  // ============ 教师 ============
+  interface Teacher {
+    id: number;
+    userCode?: string;
+    userName: string;
+    realName?: string;
+    nickName?: string;
+    avatar?: string;
+    phone?: string;
+    gender: number;
+    role: number;
+    orgId?: number;
+    campusId?: number;
+    status: number;
+    createdAt: string;
+  }
+
+  interface TeacherParams {
+    userCode?: string;
+    userName?: string;
+    realName?: string;
+    nickName?: string;
+    phone?: string;
+    gender?: number;
+    orgId?: number;
+    campusId?: number;
+  }
+
   interface UserOrgInfo {
     orgId: number;
     orgName: string;
@@ -191,7 +220,7 @@ declare namespace API {
     nickName?: string;
     phone?: string;
     avatar?: string;
-    gender: number;
+    gender?: number;
     role: number;
     orgId?: number;
     campusId?: number;
@@ -268,6 +297,7 @@ declare namespace API {
     maxNotificationTypes?: number;
     maxPushChannels?: number;
     analyticsDimensions?: string;
+    enableEvaluation?: boolean;
     sortOrder?: number;
   }
 
@@ -573,7 +603,7 @@ declare namespace API {
     realName?: string;
     avatar?: string;
     phone?: string;
-    gender: number;
+    gender?: number;
     grade?: string;
     status: number;
     orgId?: number;

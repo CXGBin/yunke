@@ -10,9 +10,10 @@ public class OrganizationService : BaseService
 {
     public OrganizationService(ISqlSugarClient db) : base(db) { }
 
-    public async Task<PagedResult<OrgDto>> GetPageAsync(PageRequest req)
+    public async Task<PagedResult<OrgDto>> GetPageAsync(PageRequest req, int? status = null)
     {
         var query = Db.Queryable<Organization>().Where(o => !o.IsDeleted);
+        if (status.HasValue) query = query.Where(o => o.Status == status.Value);
         if (!string.IsNullOrWhiteSpace(req.Keyword))
             query = query.Where(o => o.Name.Contains(req.Keyword!) || o.OrgCode.Contains(req.Keyword!));
         query = query.OrderBy(o => o.Id, OrderByType.Desc);
