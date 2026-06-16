@@ -1,5 +1,14 @@
 namespace YunKeEdu.Core.Models.DTOs;
 
+public class OrgOverviewDto
+{
+    public int TotalOrgs { get; set; }
+    public int TotalStudents { get; set; }
+    public int TotalTeachers { get; set; }
+    public int TotalCourses { get; set; }
+    public decimal TotalRevenue { get; set; }
+}
+
 public class OrgDashboardDto
 {
     public int TotalStudents { get; set; }

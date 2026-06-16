@@ -16,6 +16,10 @@ public class StatisticsController : ControllerBase
     public async Task<ApiResponse<OrgDashboardDto>> OrgDashboard()
         => ApiResponse<OrgDashboardDto>.Ok(await _service.GetOrgDashboardAsync(GetUser()));
 
+    [HttpGet("overview")]
+    public async Task<ApiResponse<OrgOverviewDto>> Overview()
+        => ApiResponse<OrgOverviewDto>.Ok(await _service.GetPlatformOverviewAsync());
+
     [HttpGet("dashboard/platform")]
     public async Task<ApiResponse<PlatformDashboardDto>> PlatformDashboard()
         => ApiResponse<PlatformDashboardDto>.Ok(await _service.GetPlatformDashboardAsync());

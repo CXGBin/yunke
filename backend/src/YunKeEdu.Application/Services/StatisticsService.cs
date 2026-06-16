@@ -296,4 +296,18 @@ public class StatisticsService : BaseService
             TopCourses = topCourses,
         };
     }
+
+    public async Task<OrgOverviewDto> GetPlatformOverviewAsync()
+    {
+        var orgCount = await Db.Queryable<Organization>().Where(o => !o.IsDeleted).CountAsync();
+        var studentCount = await Db.Queryable<SysUser>().Where(u => !u.IsDeleted && u.Role == 4).CountAsync();
+        var teacherCount = await Db.Queryable<SysUser>().Where(u => !u.IsDeleted && u.Role == 2).CountAsync();
+        var courseCount = await Db.Queryable<Course>().Where(c => !c.IsDeleted).CountAsync();
+        return new OrgOverviewDto
+        {
+            TotalOrgs = orgCount, TotalStudents = studentCount,
+            TotalTeachers = teacherCount, TotalCourses = courseCount,
+            TotalRevenue = 0,
+        };
+    }
 }
