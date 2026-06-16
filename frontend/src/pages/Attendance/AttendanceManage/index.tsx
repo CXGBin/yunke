@@ -1,29 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { ProTable } from '@ant-design/pro-components';
+import { ProTable, ModalForm, ProFormDigit } from '@ant-design/pro-components';
 import { Card, Tag, message } from 'antd';
-import { getAttendancePage } from '@/services/attendance';
+import { getAttendanceBySchedule, getMyAttendanceRecords } from '@/services/attendance';
+import { getSchedulePage } from '@/services/schedule';
+
+const STATUS_MAP: Record<number, { text: string; color: string }> = {
+  0: { text: '未签到', color: 'default' },
+  1: { text: '已签到', color: 'success' },
+  2: { text: '请假', color: 'warning' },
+  3: { text: '迟到', color: 'orange' },
+  4: { text: '缺勤', color: 'error' },
+};
 
 const AttendanceManage: React.FC = () => {
+  const [scheduleId, setScheduleId] = useState<number | undefined>();
+  const [records, setRecords] = useState<API.Attendance[]>([]);
+
   return (
     <PageContainer>
       <Card bordered={false}>
-        <ProTable<API.Attendance>
+        <ProTable<any>
           headerTitle="签到记录"
           rowKey="id"
           search={{ labelWidth: 'auto' }}
           request={async (params) => {
             try {
-              const res = await getAttendancePage({
-                page: params.current,
-                pageSize: params.pageSize,
-                keyword: params.keyword,
-                attendanceStatus: params.attendanceStatus,
-                scheduleDate: params.scheduleDate,
-              });
+              const res = await getMyAttendanceRecords();
+              const items = res || [];
               return {
-                data: res?.items || [],
-                total: res?.total || 0,
+                data: items,
+                total: items.length,
                 success: true,
               };
             } catch {
@@ -33,64 +40,41 @@ const AttendanceManage: React.FC = () => {
           }}
           columns={[
             {
+              title: '课程名称',
+              dataIndex: 'courseName',
+              ellipsis: true,
+              width: 160,
+            },
+            {
               title: '学生姓名',
               dataIndex: 'studentName',
               width: 100,
             },
             {
-              title: '课程名称',
-              dataIndex: 'courseName',
-              ellipsis: true,
-              width: 160,
-              search: false,
-            },
-            {
-              title: '所属机构',
-              dataIndex: 'orgName',
-              ellipsis: true,
-              width: 140,
-              search: false,
-            },
-            {
-              title: '校区',
-              dataIndex: 'campusName',
-              width: 120,
-              search: false,
-            },
-            {
-              title: '教师',
-              dataIndex: 'teacherName',
-              width: 100,
-              search: false,
-            },
-            {
               title: '签到状态',
-              dataIndex: 'attendanceStatus',
+              dataIndex: 'status',
               width: 100,
               valueType: 'select',
               fieldProps: {
                 options: [
                   { label: '全部', value: undefined },
-                  { label: '已签到', value: 1 },
-                  { label: '未签到', value: 0 },
-                  { label: '请假', value: 2 },
-                  { label: '迟到', value: 3 },
+                  ...Object.entries(STATUS_MAP).map(([v, s]) => ({ label: s.text, value: Number(v) })),
                 ],
               },
               render: (_, record) => {
-                const map: Record<number, { text: string; color: string }> = {
-                  0: { text: '未签到', color: 'default' },
-                  1: { text: '已签到', color: 'success' },
-                  2: { text: '请假', color: 'warning' },
-                  3: { text: '迟到', color: 'orange' },
-                };
-                const s = map[record.attendanceStatus] || { text: '未知', color: 'default' };
+                const s = STATUS_MAP[record.status] || { text: '未知', color: 'default' };
                 return <Tag color={s.color}>{s.text}</Tag>;
               },
             },
             {
+              title: '签到方式',
+              dataIndex: 'signMethod',
+              width: 100,
+              search: false,
+            },
+            {
               title: '签到时间',
-              dataIndex: 'signTime',
+              dataIndex: 'signInTime',
               width: 170,
               search: false,
               valueType: 'dateTime',
@@ -103,7 +87,7 @@ const AttendanceManage: React.FC = () => {
               search: false,
             },
           ]}
-          pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+          pagination={false}
         />
       </Card>
     </PageContainer>

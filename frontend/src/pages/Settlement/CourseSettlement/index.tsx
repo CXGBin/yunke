@@ -2,7 +2,7 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Card, Tag, message } from 'antd';
-import { getSettlementPage } from '@/services/settlement';
+import { getSettlementRecords } from '@/services/settlement';
 
 const STATUS_MAP: Record<number, { text: string; color: string }> = {
   0: { text: '待结算', color: 'warning' },
@@ -20,12 +20,9 @@ const CourseSettlement: React.FC = () => {
           search={{ labelWidth: 'auto' }}
           request={async (params) => {
             try {
-              const res = await getSettlementPage({
+              const res = await getSettlementRecords({
                 page: params.current,
                 pageSize: params.pageSize,
-                keyword: params.keyword,
-                status: params.status,
-                settlementMonth: params.settlementMonth,
               });
               return {
                 data: res?.items || [],

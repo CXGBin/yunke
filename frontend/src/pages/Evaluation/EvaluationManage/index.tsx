@@ -39,14 +39,14 @@ const EvaluationManage: React.FC = () => {
             },
             {
               title: '所属机构',
-              dataIndex: 'orgName',
+              dataIndex: 'targetName',
               ellipsis: true,
               width: 140,
               search: false,
             },
             {
               title: '学生',
-              dataIndex: 'studentName',
+              dataIndex: 'evaluatorName',
               width: 100,
               search: false,
             },
@@ -61,7 +61,7 @@ const EvaluationManage: React.FC = () => {
               dataIndex: 'score',
               width: 120,
               search: false,
-              render: (_, record) => <Rate disabled defaultValue={record.score} />,
+              render: (_, record) => <Rate disabled defaultValue={record.courseRating || 0} />,
             },
             {
               title: '评价内容',

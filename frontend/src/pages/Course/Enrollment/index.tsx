@@ -2,24 +2,25 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Card, Tag, message } from 'antd';
-import { getEnrollmentPage } from '@/services/enrollment';
+import { getCourseStudents } from '@/services/enrollment';
 
 const Enrollment: React.FC = () => {
   return (
     <PageContainer>
       <Card bordered={false}>
         <ProTable<API.Enrollment>
-          headerTitle="报名管理"
+          headerTitle="课程学员管理"
           rowKey="id"
           search={{ labelWidth: 'auto' }}
           request={async (params) => {
             try {
-              const res = await getEnrollmentPage({
+              const courseId = params.courseId as number | undefined;
+              if (!courseId) {
+                return { data: [], total: 0, success: true };
+              }
+              const res = await getCourseStudents(courseId, {
                 page: params.current,
                 pageSize: params.pageSize,
-                keyword: params.keyword,
-                status: params.status,
-                courseId: params.courseId,
               });
               return {
                 data: res?.items || [],
@@ -33,29 +34,15 @@ const Enrollment: React.FC = () => {
           }}
           columns={[
             {
+              title: '课程ID',
+              dataIndex: 'courseId',
+              width: 80,
+              search: false,
+            },
+            {
               title: '学生姓名',
               dataIndex: 'studentName',
               width: 100,
-            },
-            {
-              title: '课程名称',
-              dataIndex: 'courseName',
-              ellipsis: true,
-              width: 180,
-              search: false,
-            },
-            {
-              title: '所属机构',
-              dataIndex: 'orgName',
-              ellipsis: true,
-              width: 140,
-              search: false,
-            },
-            {
-              title: '校区',
-              dataIndex: 'campusName',
-              width: 120,
-              search: false,
             },
             {
               title: '状态',
@@ -82,13 +69,18 @@ const Enrollment: React.FC = () => {
             },
             {
               title: '报名时间',
-              dataIndex: 'enrollTime',
+              dataIndex: 'enrolledAt',
               width: 170,
               search: false,
               valueType: 'dateTime',
             },
           ]}
-          pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+          search={{
+            filterType: 'light',
+          }}
+          form={{ layout: 'horizontal' }}
+          params={{ courseId: undefined }}
+          onReset={() => {}}
         />
       </Card>
     </PageContainer>

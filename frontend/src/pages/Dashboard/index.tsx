@@ -10,7 +10,7 @@ import {
   MoneyCollectOutlined,
   RiseOutlined,
 } from '@ant-design/icons';
-import { getDashboardStats } from '@/services/statistics';
+import { getOrgDashboard } from '@/services/statistics';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<API.DashboardStats | null>(null);
@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    getDashboardStats()
+    getOrgDashboard()
       .then(setStats)
       .catch((e) => setError(e?.message || '获取数据失败'))
       .finally(() => setLoading(false));

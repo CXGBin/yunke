@@ -2,7 +2,7 @@ import React from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { Tag } from 'antd';
 import type { ProColumns } from '@ant-design/pro-components';
-import * as parentApi from '@/services/user';
+import * as parentApi from '@/services/parent';
 
 interface ParentItem {
   id: number;
@@ -31,8 +31,8 @@ export default function ParentManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await parentApi.getParents({ page: params.current, pageSize: params.pageSize, keyword: params.realName });
-          return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
+          const res = await parentApi.getParentPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName });
+          return { data: res?.items || [], total: res?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}
     />

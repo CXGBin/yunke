@@ -30,10 +30,15 @@ export default function LessonUnitManage() {
       rowKey="id"
       columns={columns}
       search={{ labelWidth: 'auto' }}
+      params={{ courseId: undefined as number | undefined }}
       request={async (params) => {
         try {
-          const res = await courseApi.getLessons({ page: params.current, pageSize: params.pageSize });
-          return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
+          const courseId = params.courseId as number | undefined;
+          if (!courseId) {
+            return { data: [], total: 0, success: true };
+          }
+          const res = await courseApi.getLessons(courseId);
+          return { data: res || [], total: (res || []).length, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}
     />

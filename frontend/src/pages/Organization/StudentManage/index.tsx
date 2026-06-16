@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { Tag, Space } from 'antd';
 import type { ProColumns } from '@ant-design/pro-components';
-import * as studentApi from '@/services/user';
+import * as studentApi from '@/services/student';
 
 interface StudentItem {
   id: number;
@@ -41,7 +41,7 @@ export default function StudentManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await studentApi.getUserPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName, role: 4 });
+          const res = await studentApi.getStudentPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName });
           return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}

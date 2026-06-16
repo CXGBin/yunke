@@ -41,7 +41,7 @@ export default function CourseCategory() {
           const res = await courseApi.getCategoryTree();
           const flat: CategoryItem[] = [];
           const flatten = (items: any[], depth = 0) => items.forEach(item => { flat.push({ ...item, name: depth > 0 ? '  '.repeat(depth) + item.name : item.name }); if (item.children) flatten(item.children, depth + 1); });
-          flatten(res.data || []);
+          flatten(res || []);
           return { data: flat, total: flat.length, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}

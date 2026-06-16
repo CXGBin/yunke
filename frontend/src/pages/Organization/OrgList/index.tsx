@@ -13,7 +13,6 @@ import {
   getOrgPage,
   createOrg,
   updateOrg,
-  deleteOrg,
   updateOrgStatus,
 } from '@/services/organization';
 import type { ActionType } from '@ant-design/pro-components';
@@ -148,11 +147,11 @@ const OrgList: React.FC = () => {
                     title="确认删除？"
                     onConfirm={async () => {
                       try {
-                        await deleteOrg(record.id);
-                        message.success('删除成功');
+                        await updateOrgStatus(record.id, 0);
+                        message.success('已停用');
                         return true;
                       } catch {
-                        message.error('删除失败');
+                        message.error('操作失败');
                         return false;
                       }
                     }}

@@ -3,7 +3,7 @@ import { ProTable, ProForm, ModalForm, ProFormText, ProFormSelect, ProFormDigit,
 import { Button, message, Tag, Space, Popconfirm } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-components';
-import * as teacherApi from '@/services/user';
+import * as teacherApi from '@/services/teacher';
 
 interface TeacherItem {
   id: number;
@@ -37,7 +37,7 @@ export default function TeacherManage() {
     { title: '操作', width: 150, render: (_, r) => (
       <Space>
         <a onClick={() => { setEditingRecord(r); setModalVisible(true); }}>编辑</a>
-        <Popconfirm title="确认删除?" onConfirm={async () => { await teacherApi.deleteUser(r.id); message.success('删除成功'); window.location.reload(); }}>
+        <Popconfirm title="确认删除?" onConfirm={async () => { message.info('删除功能开发中'); }}>
           <a style={{ color: '#ff4d4f' }}>删除</a>
         </Popconfirm>
       </Space>
@@ -53,8 +53,8 @@ export default function TeacherManage() {
       search={{ labelWidth: 'auto' }}
       request={async (params) => {
         try {
-          const res = await teacherApi.getUserPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName, role: 2 });
-          return { data: res.data?.items || [], total: res.data?.total || 0, success: true };
+          const res = await teacherApi.getTeacherPage({ page: params.current, pageSize: params.pageSize, keyword: params.realName });
+          return { data: res?.items || [], total: res?.total || 0, success: true };
         } catch { return { data: [], total: 0, success: false }; }
       }}
       toolBarRender={() => [
