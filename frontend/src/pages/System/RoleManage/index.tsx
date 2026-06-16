@@ -1,33 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Form, Input, Select, Table, Tag, Space, message, Tree, Popconfirm } from 'antd';
+import { Button, Modal, Form, Input, Select, InputNumber, Tag, Space, message, Tree, Popconfirm } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ProTable } from '@ant-design/pro-components';
 import { getRoleList, getRoleDetail, createRole, updateRole, deleteRole, getMenuTree } from '@/services/permission';
 import AuthorizedButton from '@/components/AuthorizedButton';
 
 const RoleManage: React.FC = () => {
-  const [data, setData] = useState<API.PagedResult<API.RoleItem>>({ items: [], total: 0, page: 1, pageSize: 20 });
-  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [allMenus, setAllMenus] = useState<API.MenuItem[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<React.Key[]>([]);
   const [form] = Form.useForm();
 
-  const fetchData = async (page = 1, pageSize = 20) => {
-    setLoading(true);
-    try {
-      const res = await getRoleList({ page, pageSize });
-      setData(res);
-    } catch { message.error('获取角色列表失败'); }
-    setLoading(false);
-  };
-
   const fetchMenus = async () => {
-    const tree = await getMenuTree();
-    setAllMenus(tree);
+    try { setAllMenus(await getMenuTree()); } catch { /* ignore */ }
   };
 
-  useEffect(() => { fetchData(); fetchMenus(); }, []);
+  useEffect(() => { fetchMenus(); }, []);
 
   const handleAdd = () => {
     setEditId(null);
@@ -49,7 +38,7 @@ const RoleManage: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    try { await deleteRole(id); message.success('删除成功'); fetchData(data.page, data.pageSize); }
+    try { await deleteRole(id); message.success('删除成功'); }
     catch (e: any) { message.error(e?.message || '删除失败'); }
   };
 
@@ -60,32 +49,35 @@ const RoleManage: React.FC = () => {
       if (editId) { await updateRole(editId, values); message.success('更新成功'); }
       else { await createRole(values); message.success('创建成功'); }
       setModalOpen(false);
-      fetchData(data.page, data.pageSize);
     } catch { /* validation */ }
   };
 
   const menuTreeData = (items: API.MenuItem[]): any[] =>
     items.map((item) => ({
-      key: item.id,
-      title: item.name,
-      children: menuTreeData(item.children || []),
+      key: item.id, title: item.name, children: menuTreeData(item.children || []),
     }));
 
   const columns = [
-    { title: '角色名称', dataIndex: 'roleName' },
-    { title: '角色编码', dataIndex: 'roleCode' },
-    { title: '数据范围', dataIndex: 'dataScope', render: (v: number) => ['全部', '本机构', '本校区', '仅本人'][v] || v },
-    { title: '状态', dataIndex: 'status', render: (v: number) => v === 1 ? <Tag color="green">启用</Tag> : <Tag color="red">禁用</Tag> },
+    { title: '角色名称', dataIndex: 'roleName', search: false },
+    { title: '角色编码', dataIndex: 'roleCode', search: false },
     {
-      title: '操作', width: 200,
-      render: (_: any, record: API.RoleItem) => (
+      title: '数据范围', dataIndex: 'dataScope', search: false,
+      valueEnum: { 0: { text: '全部' }, 1: { text: '本机构' }, 2: { text: '本校区' }, 3: { text: '仅本人' } },
+    },
+    {
+      title: '状态', dataIndex: 'status', search: false,
+      valueEnum: { 1: { text: '启用', status: 'Success' }, 0: { text: '禁用', status: 'Error' } },
+    },
+    {
+      title: '操作', valueType: 'option', search: false, width: 200,
+      render: (_: any, record: any) => (
         <Space>
           <AuthorizedButton permission="sys:role:edit">
-            <Button size="small" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>编辑</Button>
+            <a onClick={() => handleEdit(record.id)}>编辑</a>
           </AuthorizedButton>
           <AuthorizedButton permission="sys:role:delete">
             <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record.id)}>
-              <Button size="small" type="link" danger icon={<DeleteOutlined />}>删除</Button>
+              <a style={{ color: '#ff4d4f' }}>删除</a>
             </Popconfirm>
           </AuthorizedButton>
         </Space>
@@ -95,19 +87,25 @@ const RoleManage: React.FC = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <AuthorizedButton permission="sys:role:add">
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>新增角色</Button>
-        </AuthorizedButton>
-      </div>
-      <Table
-        rowKey="id" columns={columns} dataSource={data.items} loading={loading}
-        pagination={{ current: data.page, pageSize: data.pageSize, total: data.total,
-          onChange: (p, ps) => fetchData(p, ps) }}
+      <ProTable<API.RoleItem>
+        rowKey="id"
+        headerTitle="角色管理"
+        columns={columns}
+        toolBarRender={() => [
+          <AuthorizedButton permission="sys:role:add" key="add">
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>新增角色</Button>
+          </AuthorizedButton>,
+        ]}
+        request={async (params) => {
+          const res = await getRoleList({ page: params.current || 1, pageSize: params.pageSize || 20, keyword: params.roleName as string });
+          return { data: res.items, total: res.total, success: true };
+        }}
+        pagination={{ defaultPageSize: 20 }}
+        search={false}
       />
-      <Modal title={editId ? '编辑角色' : '新增角色'} open={modalOpen} onOk={handleSubmit} onCancel={() => setModalOpen(false)} width={700}>
+      <Modal title={editId ? '编辑角色' : '新增角色'} open={modalOpen} onOk={handleSubmit} onCancel={() => setModalOpen(false)} width={700} destroyOnClose>
         <Form form={form} layout="vertical">
-          <Form.Item name="roleName" label="角色名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Form.Item name="roleName" label="角色名称" rules={[{ required: true, message: '请输入角色名称' }]}><Input /></Form.Item>
           <Form.Item name="roleCode" label="角色编码"><Input /></Form.Item>
           <Form.Item name="description" label="描述"><Input.TextArea rows={2} /></Form.Item>
           <Form.Item name="sortOrder" label="排序"><InputNumber style={{ width: '100%' }} /></Form.Item>
@@ -116,7 +114,8 @@ const RoleManage: React.FC = () => {
           </Form.Item>
           <Form.Item label="菜单权限">
             <Tree
-              checkable checkedKeys={checkedKeys} onCheck={(keys) => setCheckedKeys(keys as React.Key[])}
+              checkable checkedKeys={checkedKeys}
+              onCheck={(keys) => setCheckedKeys(keys as React.Key[])}
               treeData={menuTreeData(allMenus)} defaultExpandAll checkStrictly
             />
           </Form.Item>
